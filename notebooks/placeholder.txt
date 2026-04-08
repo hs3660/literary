@@ -1,6 +1,0 @@
-pandas
-pymongo
-psycopg2-binary
-neo4j
-requests
-jupyter
