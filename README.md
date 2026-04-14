@@ -5,7 +5,7 @@
 A Big Data pipeline that ingests 25+ years of NYT editorial and bestseller data to help readers discover books with lasting cultural and critical value. The system combines NYT Critics' Picks (editorial signal) with Bestseller Rankings (market signal) to surface books that have truly stood the test of time.
 
 ## Repository Structure
-'''
+```
 literary/
 ├── notebooks/
 │   ├── 01_ingestion.ipynb       # Pulls data from NYT APIs into MongoDB
@@ -17,7 +17,7 @@ literary/
 ├── .gitignore
 ├── requirements.txt
 └── README.md
-'''
+```
 
 ## Tech Stack
 - **Python** — Primary ETL engine
