@@ -11,8 +11,15 @@ Fundamentals of Data Engineering
   3. Create a new app called "Literary Trends Project" in your account and enable both Archive and Books APIs and create the API key.
   4. Once the key is created, open Jupyter notebooks through Anaconda and route to the GitHub repository and begin code for data ingestion, under the name '01_ingestion.ipynb'
 
-## Step 3: 01_ingestion.ipynb
+## Step 3: 01_ingestion.ipynb – Ingesting Archive & Books API data and loading into MongoDB
   1. Download all packages
   2. Connect to MongoDB
   3. Connect to API Key & define fetching function
   4. Insert data into MongoDB
+
+## Step 4: 02_cleaning.ipynb – Cleaning & Transformation
+  1. Download all packages
+  2. Connect to MongoDB
+  3. Convert db to dataframe for both datasets
+  4. Proceed with cleaning – Keeping only relevant columns, removing null values, removing unnecessary text, etc.
+  5. Export both as .csv files for SQL querying
