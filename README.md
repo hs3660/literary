@@ -1,5 +1,4 @@
-# Literary Warehouse
-**Fundamentals of Data Engineering — Term Project**
+# **Fundamentals of Data Engineering — Literary Warehouse Project**
 *Hritika Singh & Hanah Shih*
 
 ## Overview
