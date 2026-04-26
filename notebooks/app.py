@@ -24,23 +24,6 @@ st.markdown("""
         h1, h2, h3 {
             font-weight: 600;
         }
-        .home-card {
-            background-color: #f5f5f0;
-            border-radius: 12px;
-            padding: 1.5rem 2rem;
-            margin-bottom: 1.2rem;
-        }
-        .home-title {
-            font-size: 3rem;
-            font-weight: 700;
-            letter-spacing: -1px;
-            line-height: 1.1;
-        }
-        .home-subtitle {
-            font-size: 1.1rem;
-            color: #555;
-            margin-top: 0.5rem;
-        }
         .divider {
             border: none;
             border-top: 1px solid #e0e0e0;
@@ -93,15 +76,14 @@ page = st.sidebar.selectbox("Choose query to preview", [
 ])
 
 if page == "Home":
-    st.markdown('<div class="home-title">Literary Trends Warehouse</div>', unsafe_allow_html=True)
-    st.markdown('<div class="home-subtitle">25+ years of NYT data — explored.</div>', unsafe_allow_html=True)
-    st.markdown('<hr class="divider">', unsafe_allow_html=True)
+    st.title("Literary Trends Warehouse")
+    st.write("25+ years of NYT data — explored.")
+    st.divider()
 
     col1, col2 = st.columns(2)
 
     with col1:
-        st.markdown('<div class="home-card">', unsafe_allow_html=True)
-        st.markdown("### About This Project")
+        st.subheader("About This Project")
         st.write("""
             The Literary Trends Warehouse is a Big Data pipeline built for the
             Fundamentals of Data Engineering course. It ingests 25+ years of NYT
@@ -112,28 +94,24 @@ if page == "Home":
             with weekly bestseller rankings to surface books that have truly stood
             the test of time.
         """)
-        st.markdown('</div>', unsafe_allow_html=True)
 
     with col2:
-        st.markdown('<div class="home-card">', unsafe_allow_html=True)
-        st.markdown("### The Data")
+        st.subheader("The Data")
         st.write("This project pulls from two NYT APIs:")
         st.markdown("""
         - **NYT Archive API** — Critics Pick reviews from 2000 to 2026
         - **NYT Books API** — Weekly hardcover Fiction and Non-Fiction bestseller rankings from 2008 to 2026
         """)
         st.write("Data is stored in MongoDB, cleaned with Pandas, and loaded into PostgreSQL for analysis.")
-        st.markdown('</div>', unsafe_allow_html=True)
 
-    st.markdown('<div class="home-card">', unsafe_allow_html=True)
-    st.markdown("### How to Use This App")
+    st.divider()
+    st.subheader("How to Use This App")
     st.write("""
-        Use the dropdown in the left sidebar labelled Choose query to preview to explore
-        different views of the data. Each view runs a live SQL query against the database and
-        displays the results as a table and chart. Some views include interactive sliders
-        so you can filter by number of results or other parameters.
+        Use the dropdown in the left sidebar to explore different views of the data.
+        Each view runs a live SQL query against the database and displays the results
+        as a table and chart. Some views include interactive sliders so you can filter
+        by number of results or other parameters.
     """)
-    st.markdown("**Available views:**")
     st.markdown("""
     - Top longest running bestsellers
     - Authors with the most bestsellers
@@ -145,7 +123,6 @@ if page == "Home":
     - Books that debuted at number 1
     - Authors in both Critics Picks and Bestsellers
     """)
-    st.markdown('</div>', unsafe_allow_html=True)
 
 elif page == "Top Longest Running Bestsellers":
     st.header("Top Longest Running Bestsellers")
@@ -269,7 +246,7 @@ elif page == "Top Publishers by Shelf Life":
 
 elif page == "Books Over 20 Weeks but Never Top 5":
     st.header("Books Over 20 Weeks but Never Top 5")
-    st.markdown('<div class="query-question">Which books stayed on the list for a long time but never broke into the top 5 rankings — the hidden gems?</div>', unsafe_allow_html=True)
+    st.markdown('<div class="query-question">Which books stayed on the list for a long time but never broke into the top 5 rankings?</div>', unsafe_allow_html=True)
     min_weeks = st.slider("Minimum weeks on list to filter by", min_value=20, max_value=60, value=20, step=5)
     df = run_query(f"""
         SELECT title, author, weeks_on_list, rank as final_rank
