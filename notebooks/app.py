@@ -9,13 +9,8 @@ st.set_page_config(page_title="Literary Trends Warehouse", layout="wide")
 st.markdown("""
     <style>
         @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&display=swap');
-
         html, body, [class*="css"] {
             font-family: 'DM Sans', sans-serif;
-            background-color: #ffffff;
-        }
-        .stApp {
-            background-color: #ffffff;
         }
         .block-container {
             padding-top: 2rem;
@@ -24,27 +19,15 @@ st.markdown("""
         h1, h2, h3 {
             font-weight: 600;
         }
-        .divider {
-            border: none;
-            border-top: 1px solid #e0e0e0;
-            margin: 1.5rem 0;
-        }
         .query-question {
             font-size: 1rem;
-            color: #555555;
+            color: #aaaaaa;
             margin-bottom: 1rem;
             font-style: italic;
         }
     </style>
 """, unsafe_allow_html=True)
 
-mpl.rcParams['figure.facecolor'] = '#ffffff'
-mpl.rcParams['axes.facecolor'] = '#f5f5f0'
-mpl.rcParams['axes.edgecolor'] = '#cccccc'
-mpl.rcParams['axes.labelcolor'] = '#1a1a1a'
-mpl.rcParams['xtick.color'] = '#555555'
-mpl.rcParams['ytick.color'] = '#555555'
-mpl.rcParams['text.color'] = '#1a1a1a'
 mpl.rcParams['font.family'] = 'DejaVu Sans'
 
 def get_connection():
@@ -204,7 +187,7 @@ elif page == "Most Frequent Authors":
 
 elif page == "Critics vs Bestsellers Overlap":
     st.header("Critics vs Bestsellers Overlap")
-    st.markdown('<div class="query-question">Which books were both critically reviewed by the NYT and appeared on the bestseller list — and does critical attention lead to more weeks on the list?</div>', unsafe_allow_html=True)
+    st.markdown('<div class="query-question">Which books were both critically reviewed by the NYT and appeared on the bestseller list?</div>', unsafe_allow_html=True)
     min_reviews = st.slider("Minimum number of critic reviews to filter by", min_value=1, max_value=10, value=1)
     df = run_query(f"""
         SELECT b.title, b.author, MAX(b.weeks_on_list) as max_weeks,
@@ -258,7 +241,7 @@ elif page == "Books Over 20 Weeks but Never Top 5":
 
 elif page == "Books That Debuted at Number 1":
     st.header("Books That Debuted at Number 1")
-    st.markdown('<div class="query-question">Which books entered the bestseller list straight at number 1, and how long did they stay on the list?</div>', unsafe_allow_html=True)
+    st.markdown('<div class="query-question">Which books entered the bestseller list straight at number 1, and how long did they stay?</div>', unsafe_allow_html=True)
     limit = st.slider("How many books would you like to see?", min_value=5, max_value=25, value=10, step=5)
     df = run_query(f"""
         SELECT title, author, list_date, weeks_on_list
