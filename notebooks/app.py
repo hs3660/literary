@@ -2,9 +2,97 @@ import streamlit as st
 import psycopg2
 import pandas as pd
 import matplotlib.pyplot as plt
+import matplotlib as mpl
 
+# Page config
 st.set_page_config(page_title="Literary Trends Warehouse", layout="wide")
 
+# Custom CSS for white background, font, and colors
+st.markdown("""
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&display=swap');
+
+        html, body, [class*="css"] {
+            font-family: 'DM Sans', sans-serif;
+            background-color: #ffffff;
+            color: #1a1a1a;
+        }
+        .stApp {
+            background-color: #ffffff;
+        }
+        .block-container {
+            padding-top: 2rem;
+            padding-bottom: 2rem;
+        }
+        h1 {
+            color: #1a1a1a;
+            font-size: 2.4rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+        h2, h3 {
+            color: #1a1a1a;
+            font-weight: 600;
+        }
+        .sidebar .sidebar-content {
+            background-color: #f5f5f0;
+        }
+        .stSelectbox label {
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+        .stDataFrame {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+        }
+        .home-card {
+            background-color: #f5f5f0;
+            border-radius: 12px;
+            padding: 1.5rem 2rem;
+            margin-bottom: 1.2rem;
+        }
+        .home-title {
+            font-size: 3rem;
+            font-weight: 700;
+            color: #1a1a1a;
+            letter-spacing: -1px;
+            line-height: 1.1;
+        }
+        .home-subtitle {
+            font-size: 1.1rem;
+            color: #555;
+            margin-top: 0.5rem;
+        }
+        .tag {
+            display: inline-block;
+            background-color: #1a1a1a;
+            color: #ffffff;
+            padding: 0.2rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            margin-right: 0.4rem;
+            margin-bottom: 0.4rem;
+        }
+        .divider {
+            border: none;
+            border-top: 1px solid #e0e0e0;
+            margin: 1.5rem 0;
+        }
+    </style>
+""", unsafe_allow_html=True)
+
+# Set matplotlib style to match white theme
+mpl.rcParams['figure.facecolor'] = '#ffffff'
+mpl.rcParams['axes.facecolor'] = '#f5f5f0'
+mpl.rcParams['axes.edgecolor'] = '#cccccc'
+mpl.rcParams['axes.labelcolor'] = '#1a1a1a'
+mpl.rcParams['xtick.color'] = '#555555'
+mpl.rcParams['ytick.color'] = '#555555'
+mpl.rcParams['text.color'] = '#1a1a1a'
+mpl.rcParams['font.family'] = 'DejaVu Sans'
+
+# DB connection
 def get_connection():
     return psycopg2.connect(
         host='localhost',
@@ -18,11 +106,12 @@ conn = get_connection()
 def run_query(query):
     return pd.read_sql_query(query, conn)
 
-st.title("Literary Trends Warehouse")
-st.write("Explore 25+ years of NYT Critics Picks and Bestseller data.")
-
-page = st.sidebar.selectbox("Choose a View", [
-    "Top 10 Longest Running Bestsellers",
+# Sidebar
+st.sidebar.markdown("## Literary Trends")
+st.sidebar.markdown("---")
+page = st.sidebar.selectbox("Choose query to preview", [
+    "Home",
+    "Top Longest Running Bestsellers",
     "Authors with the Most Bestsellers",
     "Hardcover Fiction Rankings",
     "Most Frequent Authors",
@@ -30,50 +119,109 @@ page = st.sidebar.selectbox("Choose a View", [
     "Top Publishers by Shelf Life",
     "Books Over 20 Weeks but Never Top 5",
     "Books That Debuted at Number 1",
-    "Publishers: Fiction vs Nonfiction",
     "Authors in Both Critics and Bestsellers"
 ])
 
-if page == "Top 10 Longest Running Bestsellers":
-    st.header("Top 10 Longest Running Bestsellers")
-    df = run_query("""
+# Home Page
+if page == "Home":
+    st.markdown('<div class="home-title">Literary Trends<br>Warehouse</div>', unsafe_allow_html=True)
+    st.markdown('<div class="home-subtitle">25+ years of NYT data — explored.</div>', unsafe_allow_html=True)
+    st.markdown('<hr class="divider">', unsafe_allow_html=True)
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        st.markdown('<div class="home-card">', unsafe_allow_html=True)
+        st.markdown("### About This Project")
+        st.write("""
+            The Literary Trends Warehouse is a Big Data pipeline built for the 
+            Fundamentals of Data Engineering course. It ingests 25+ years of NYT 
+            editorial and bestseller data to help readers discover books with lasting 
+            cultural and critical value.
+
+            Bestseller lists reflect short-term hype — we combine NYT Critics' Picks 
+            with weekly bestseller rankings to surface books that have truly stood 
+            the test of time.
+        """)
+        st.markdown('</div>', unsafe_allow_html=True)
+
+    with col2:
+        st.markdown('<div class="home-card">', unsafe_allow_html=True)
+        st.markdown("### The Data")
+        st.write("This project pulls from two NYT APIs:")
+        st.markdown("""
+        - **NYT Archive API** — Critics' Pick reviews from 2000 to 2026
+        - **NYT Books API** — Weekly hardcover Fiction and Non-Fiction bestseller rankings from 2008 to 2026
+        """)
+        st.write("Data is stored in MongoDB, cleaned with Pandas, and loaded into PostgreSQL for analysis.")
+        st.markdown('</div>', unsafe_allow_html=True)
+
+    st.markdown('<div class="home-card">', unsafe_allow_html=True)
+    st.markdown("### How to Use This App")
+    st.write("""
+        Use the dropdown in the left sidebar labelled **Choose query to preview** to explore 
+        different views of the data. Each view runs a live SQL query against the database and 
+        displays the results as a table and chart. Some views include interactive sliders 
+        so you can filter by number of results or other parameters.
+    """)
+    st.markdown("**Available views:**")
+    st.markdown("""
+    - Top longest running bestsellers
+    - Authors with the most bestsellers
+    - Hardcover fiction rankings
+    - Most frequent authors
+    - Critics vs Bestsellers overlap
+    - Top publishers by shelf life
+    - Hidden gems (long on list, never top 5)
+    - Books that debuted at number 1
+    - Authors in both Critics Picks and Bestsellers
+    """)
+    st.markdown('</div>', unsafe_allow_html=True)
+
+# Query Pages
+elif page == "Top Longest Running Bestsellers":
+    st.header("Top Longest Running Bestsellers")
+    limit = st.slider("Number of results to show", min_value=5, max_value=25, value=10, step=5)
+    df = run_query(f"""
         SELECT title, author, MAX(weeks_on_list) as total_weeks, MIN(rank) as best_rank
         FROM bestsellers
         GROUP BY title, author
         ORDER BY total_weeks DESC
-        LIMIT 10
+        LIMIT {limit}
     """)
-    st.dataframe(df)
-    fig, ax = plt.subplots()
-    ax.barh(df['title'], df['total_weeks'], color='teal')
+    st.dataframe(df, use_container_width=True)
+    fig, ax = plt.subplots(figsize=(10, 6))
+    ax.barh(df['title'], df['total_weeks'], color='#2d6a4f')
     ax.set_xlabel("Weeks on List")
-    ax.set_title("Top 10 Longest Running Bestsellers")
+    ax.set_title(f"Top {limit} Longest Running Bestsellers")
     plt.tight_layout()
     st.pyplot(fig)
 
 elif page == "Authors with the Most Bestsellers":
     st.header("Authors with the Most Unique Bestsellers")
-    df = run_query("""
+    limit = st.slider("Number of authors to show", min_value=5, max_value=20, value=10, step=5)
+    df = run_query(f"""
         SELECT author, COUNT(DISTINCT title) as unique_bestsellers,
         AVG(weeks_on_list)::NUMERIC(10,2) as avg_weeks_per_book
         FROM bestsellers
         GROUP BY author
         HAVING COUNT(DISTINCT title) > 1
         ORDER BY unique_bestsellers DESC
-        LIMIT 10
+        LIMIT {limit}
     """)
-    st.dataframe(df)
-    fig, ax = plt.subplots()
-    ax.bar(df['author'], df['unique_bestsellers'], color='steelblue')
+    st.dataframe(df, use_container_width=True)
+    fig, ax = plt.subplots(figsize=(10, 5))
+    ax.bar(df['author'], df['unique_bestsellers'], color='#1d3557')
     plt.xticks(rotation=45, ha='right')
     ax.set_ylabel("Unique Bestsellers")
-    ax.set_title("Authors with the Most Unique Bestsellers")
+    ax.set_title(f"Top {limit} Most Prolific Authors")
     plt.tight_layout()
     st.pyplot(fig)
 
 elif page == "Hardcover Fiction Rankings":
     st.header("Hardcover Fiction - Most Weeks on List")
-    df = run_query("""
+    limit = st.slider("Number of books to show", min_value=5, max_value=30, value=20, step=5)
+    df = run_query(f"""
         SELECT DISTINCT title, author,
         FIRST_VALUE(rank) OVER (PARTITION BY title ORDER BY list_date ASC) as starting_rank,
         LAST_VALUE(rank) OVER (PARTITION BY title ORDER BY list_date ASC
@@ -82,42 +230,44 @@ elif page == "Hardcover Fiction Rankings":
         FROM bestsellers
         WHERE list_name = 'hardcover-fiction'
         ORDER BY times_on_list DESC
-        LIMIT 20
+        LIMIT {limit}
     """)
-    st.dataframe(df)
+    st.dataframe(df, use_container_width=True)
 
 elif page == "Most Frequent Authors":
     st.header("Most Frequent Authors on the Bestseller List")
-    df = run_query("""
+    limit = st.slider("Number of authors to show", min_value=5, max_value=20, value=10, step=5)
+    df = run_query(f"""
         SELECT author, COUNT(*) as appearances
         FROM bestsellers
         GROUP BY author
         ORDER BY appearances DESC
-        LIMIT 10
+        LIMIT {limit}
     """)
-    st.dataframe(df)
-    fig, ax = plt.subplots()
-    ax.bar(df['author'], df['appearances'], color='coral')
+    st.dataframe(df, use_container_width=True)
+    fig, ax = plt.subplots(figsize=(10, 5))
+    ax.bar(df['author'], df['appearances'], color='#e63946')
     plt.xticks(rotation=45, ha='right')
     ax.set_ylabel("Appearances")
-    ax.set_title("Most Frequent Authors on the Bestseller List")
+    ax.set_title(f"Top {limit} Authors by Appearances")
     plt.tight_layout()
     st.pyplot(fig)
 
 elif page == "Critics vs Bestsellers Overlap":
     st.header("Books That Were Both Critically Reviewed and Bestsellers")
-    df = run_query("""
+    min_reviews = st.slider("Minimum number of critic reviews", min_value=1, max_value=10, value=1)
+    df = run_query(f"""
         SELECT b.title, b.author, MAX(b.weeks_on_list) as max_weeks,
         COUNT(c.headline) as review_count
         FROM bestsellers b
         LEFT JOIN critics c ON LOWER(b.title) = LOWER(c.headline)
         GROUP BY b.title, b.author
-        HAVING COUNT(c.headline) > 0
+        HAVING COUNT(c.headline) >= {min_reviews}
         ORDER BY review_count DESC, max_weeks DESC
     """)
-    st.dataframe(df)
-    fig, ax = plt.subplots()
-    ax.scatter(df['review_count'], df['max_weeks'], color='teal', alpha=0.5)
+    st.dataframe(df, use_container_width=True)
+    fig, ax = plt.subplots(figsize=(8, 6))
+    ax.scatter(df['review_count'], df['max_weeks'], color='#457b9d', alpha=0.6, s=80)
     ax.set_xlabel("Number of Critic Reviews")
     ax.set_ylabel("Max Weeks on List")
     ax.set_title("Do Critic Reviews Lead to More Weeks on List?")
@@ -125,65 +275,51 @@ elif page == "Critics vs Bestsellers Overlap":
     st.pyplot(fig)
 
 elif page == "Top Publishers by Shelf Life":
-    st.header("Top 10 Publishers by Total Shelf Life")
-    df = run_query("""
+    st.header("Top Publishers by Total Shelf Life")
+    limit = st.slider("Number of publishers to show", min_value=5, max_value=20, value=10, step=5)
+    df = run_query(f"""
         SELECT publisher, COUNT(DISTINCT title) as total_unique_books,
         SUM(weeks_on_list) as total_shelf_life
         FROM bestsellers
         GROUP BY publisher
         ORDER BY total_shelf_life DESC
-        LIMIT 10
+        LIMIT {limit}
     """)
-    st.dataframe(df)
-    fig, ax = plt.subplots()
-    ax.barh(df['publisher'], df['total_shelf_life'], color='purple')
+    st.dataframe(df, use_container_width=True)
+    fig, ax = plt.subplots(figsize=(10, 6))
+    ax.barh(df['publisher'], df['total_shelf_life'], color='#6a0572')
     ax.set_xlabel("Total Weeks on List")
-    ax.set_title("Top Publishers by Total Shelf Life")
+    ax.set_title(f"Top {limit} Publishers by Total Shelf Life")
     plt.tight_layout()
     st.pyplot(fig)
 
 elif page == "Books Over 20 Weeks but Never Top 5":
     st.header("Books on List Over 20 Weeks but Never Ranked in Top 5")
-    df = run_query("""
+    min_weeks = st.slider("Minimum weeks on list", min_value=20, max_value=60, value=20, step=5)
+    df = run_query(f"""
         SELECT title, author, weeks_on_list, rank as final_rank
         FROM bestsellers
-        WHERE weeks_on_list > 20 AND rank > 5
+        WHERE weeks_on_list > {min_weeks} AND rank > 5
         ORDER BY weeks_on_list DESC
     """)
-    st.dataframe(df)
+    st.dataframe(df, use_container_width=True)
 
 elif page == "Books That Debuted at Number 1":
     st.header("Books That Debuted at Number 1")
-    df = run_query("""
+    limit = st.slider("Number of books to show", min_value=5, max_value=25, value=10, step=5)
+    df = run_query(f"""
         SELECT title, author, list_date, weeks_on_list
         FROM bestsellers
         WHERE rank = 1
         ORDER BY weeks_on_list DESC
-        LIMIT 10
+        LIMIT {limit}
     """)
-    st.dataframe(df)
-
-elif page == "Publishers: Fiction vs Nonfiction":
-    st.header("Most Prolific Publishers: Fiction vs Nonfiction")
-    df = run_query("""
-        SELECT publisher, list_name, COUNT(DISTINCT title) as total_titles
-        FROM bestsellers
-        GROUP BY publisher, list_name
-        ORDER BY total_titles DESC
-        LIMIT 10
-    """)
-    st.dataframe(df)
-    fiction = df[df['list_name'] == 'hardcover-fiction']
-    nonfiction = df[df['list_name'] == 'hardcover-nonfiction']
-    fig, ax = plt.subplots()
-    x = range(len(fiction))
-    ax.bar(x, fiction['total_titles'].values, width=0.4, label='Fiction', color='steelblue', alpha=0.7)
-    ax.bar([i + 0.4 for i in x], nonfiction['total_titles'].values[:len(fiction)], width=0.4, label='Nonfiction', color='coral', alpha=0.7)
-    ax.set_xticks([i + 0.2 for i in x])
-    ax.set_xticklabels(fiction['publisher'].values, rotation=45, ha='right')
-    ax.set_ylabel("Total Titles")
-    ax.set_title("Publishers: Fiction vs Nonfiction")
-    ax.legend()
+    st.dataframe(df, use_container_width=True)
+    fig, ax = plt.subplots(figsize=(10, 5))
+    ax.bar(df['title'], df['weeks_on_list'], color='#f4a261')
+    plt.xticks(rotation=45, ha='right')
+    ax.set_ylabel("Weeks on List")
+    ax.set_title(f"Top {limit} Number 1 Debuts by Weeks on List")
     plt.tight_layout()
     st.pyplot(fig)
 
@@ -196,4 +332,4 @@ elif page == "Authors in Both Critics and Bestsellers":
         ORDER BY b.author
         LIMIT 10
     """)
-    st.dataframe(df)
+    st.dataframe(df, use_container_width=True)
