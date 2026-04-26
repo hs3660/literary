@@ -244,15 +244,16 @@ elif page == "Books That Debuted at Number 1":
     st.markdown('<div class="query-question">Which books entered the bestseller list straight at number 1, and how long did they stay?</div>', unsafe_allow_html=True)
     limit = st.slider("How many books would you like to see?", min_value=5, max_value=25, value=10, step=5)
     df = run_query(f"""
-        SELECT title, author, list_date, weeks_on_list
+        SELECT title, author, MAX(weeks_on_list) as max_weeks_on_list
         FROM bestsellers
         WHERE rank = 1
-        ORDER BY weeks_on_list DESC
+        GROUP BY title, author
+        ORDER BY max_weeks_on_list DESC
         LIMIT {limit}
     """)
     st.dataframe(df, use_container_width=True)
     fig, ax = plt.subplots(figsize=(10, 5))
-    ax.bar(df['title'], df['weeks_on_list'], color='#f4a261')
+    ax.bar(df['title'], df['max_weeks_on_list'], color='#f4a261')
     plt.xticks(rotation=45, ha='right')
     ax.set_ylabel("Weeks on List")
     ax.set_title(f"Top {limit} Number 1 Debuts by Weeks on List")
